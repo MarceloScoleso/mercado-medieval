@@ -33,4 +33,14 @@ public class PersonagemService {
     public void excluirPersonagem(Long id) {
         personagemRepository.deleteById(id);
     }
+
+    // Buscar personagem por nome
+    public Optional<Personagem> buscarPorNome(String nome) {
+        return personagemRepository.findByNome(nome);
+    }
+
+    // Buscar personagens por classe
+    public List<Personagem> buscarPorClasse(String classe) {
+        return personagemRepository.findByClasse(classe);
+    }
 }

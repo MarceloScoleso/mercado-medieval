@@ -18,28 +18,24 @@ public class ItemController {
     @Autowired
     private ItemService itemService;
 
-    // Criar ou atualizar item
     @PostMapping
     public ResponseEntity<Item> criarItem(@Valid @RequestBody Item item) {
         Item savedItem = itemService.salvarItem(item);
         return new ResponseEntity<>(savedItem, HttpStatus.CREATED);
     }
 
-    // Listar todos os itens
     @GetMapping
     public ResponseEntity<List<Item>> listarItens() {
         List<Item> itens = itemService.listarItens();
         return new ResponseEntity<>(itens, HttpStatus.OK);
     }
 
-    // Buscar item por id
     @GetMapping("/{id}")
     public ResponseEntity<Item> buscarItem(@PathVariable Long id) {
         Optional<Item> item = itemService.buscarPorId(id);
         return item.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
     }
 
-    // Excluir item por id
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirItem(@PathVariable Long id) {
         Optional<Item> item = itemService.buscarPorId(id);
@@ -48,5 +44,34 @@ public class ItemController {
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
+    }
+
+    // Buscar itens por nome parcial
+    @GetMapping("/buscarPorNome")
+    public ResponseEntity<List<Item>> buscarItemPorNome(@RequestParam String nome) {
+        List<Item> itens = itemService.buscarPorNome(nome);
+        return itens.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(itens);
+    }
+
+    // Buscar itens por tipo
+    @GetMapping("/buscarPorTipo")
+    public ResponseEntity<List<Item>> buscarItemPorTipo(@RequestParam String tipo) {
+        List<Item> itens = itemService.buscarPorTipo(tipo);
+        return itens.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(itens);
+    }
+
+    // Buscar itens por faixa de preço
+    @GetMapping("/buscarPorPreco")
+    public ResponseEntity<List<Item>> buscarItemPorPreco(@RequestParam double precoMinimo,
+                                                    @RequestParam double precoMaximo) {
+        List<Item> itens = itemService.buscarPorPreco(precoMinimo, precoMaximo);
+        return itens.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(itens);
+    }
+
+    // Buscar itens por raridade
+    @GetMapping("/buscarPorRaridade")
+    public ResponseEntity<List<Item>> buscarItemPorRaridade(@RequestParam String raridade) {
+        List<Item> itens = itemService.buscarPorRaridade(raridade);
+        return itens.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(itens);
     }
 }

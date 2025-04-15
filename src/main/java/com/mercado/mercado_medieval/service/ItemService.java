@@ -29,4 +29,24 @@ public class ItemService {
     public void excluirItem(Long id) {
         itemRepository.deleteById(id);
     }
+
+    // Buscar itens por nome (parcial e case-insensitive)
+    public List<Item> buscarPorNome(String nome) {
+        return itemRepository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    // Buscar itens por tipo
+    public List<Item> buscarPorTipo(String tipo) {
+        return itemRepository.findByTipo(tipo);
+    }
+
+    // Buscar itens por faixa de preço
+    public List<Item> buscarPorPreco(double precoMinimo, double precoMaximo) {
+        return itemRepository.findByPrecoBetween(precoMinimo, precoMaximo);
+    }
+
+    // Buscar itens por raridade
+    public List<Item> buscarPorRaridade(String raridade) {
+        return itemRepository.findByRaridade(raridade);
+    }
 }
