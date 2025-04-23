@@ -1,7 +1,9 @@
 package com.mercado.mercado_medieval.model;
 
+import com.mercado.mercado_medieval.enums.ClassePersonagem;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -17,10 +19,9 @@ public class Personagem {
     @NotBlank(message = "O nome é obrigatório.")
     private String nome;
 
-    @NotBlank(message = "A classe é obrigatória.")
-    @Pattern(regexp = "guerreiro|mago|arqueiro", flags = Pattern.Flag.CASE_INSENSITIVE,
-            message = "Classe deve ser guerreiro, mago ou arqueiro.")
-    private String classe;
+    @NotNull(message = "A classe é obrigatória.")
+    @Enumerated(EnumType.STRING)
+    private ClassePersonagem classe;
 
     @Min(value = 1, message = "O nível mínimo é 1.")
     @Max(value = 99, message = "O nível máximo é 99.")

@@ -4,6 +4,8 @@ import com.mercado.mercado_medieval.model.Personagem;
 import com.mercado.mercado_medieval.repository.PersonagemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import java.util.List;
 import java.util.Optional;
@@ -42,5 +44,11 @@ public class PersonagemService {
     // Buscar personagens por classe
     public List<Personagem> buscarPorClasse(String classe) {
         return personagemRepository.findByClasse(classe);
+    }
+    public Page<Personagem> filtrarPersonagens(String nome, String classe, Pageable pageable) {
+        // Para evitar null pointer, tratamos os filtros nulos com "" (vazio)
+        if (nome == null) nome = "";
+        if (classe == null) classe = "";
+        return personagemRepository.findByNomeContainingIgnoreCaseAndClasseContainingIgnoreCase(nome, classe, pageable);
     }
 }

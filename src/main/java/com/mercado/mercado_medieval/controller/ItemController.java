@@ -6,10 +6,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 import jakarta.validation.Valid;
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/itens")
@@ -25,53 +25,31 @@ public class ItemController {
     }
 
     @GetMapping
-    public ResponseEntity<List<Item>> listarItens() {
-        List<Item> itens = itemService.listarItens();
-        return new ResponseEntity<>(itens, HttpStatus.OK);
+    public ResponseEntity<Page<Item>> listarItensFiltrados(
+            @RequestParam(required = false) String nome,
+            @RequestParam(required = false) String tipo,
+            @RequestParam(required = false) String raridade,
+            @RequestParam(required = false) Double precoMinimo,
+            @RequestParam(required = false) Double precoMaximo,
+            Pageable pageable
+    ) {
+        Page<Item> itens = itemService.filtrarItens(nome, tipo, raridade, precoMinimo, precoMaximo, pageable);
+        return ResponseEntity.ok(itens);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<Item> buscarItem(@PathVariable Long id) {
-        Optional<Item> item = itemService.buscarPorId(id);
-        return item.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+        return itemService.buscarPorId(id)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> excluirItem(@PathVariable Long id) {
-        Optional<Item> item = itemService.buscarPorId(id);
-        if (item.isPresent()) {
+        if (itemService.buscarPorId(id).isPresent()) {
             itemService.excluirItem(id);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
-    }
-
-    // Buscar itens por nome parcial
-    @GetMapping("/buscarPorNome")
-    public ResponseEntity<List<Item>> buscarItemPorNome(@RequestParam String nome) {
-        List<Item> itens = itemService.buscarPorNome(nome);
-        return itens.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(itens);
-    }
-
-    // Buscar itens por tipo
-    @GetMapping("/buscarPorTipo")
-    public ResponseEntity<List<Item>> buscarItemPorTipo(@RequestParam String tipo) {
-        List<Item> itens = itemService.buscarPorTipo(tipo);
-        return itens.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(itens);
-    }
-
-    // Buscar itens por faixa de preço
-    @GetMapping("/buscarPorPreco")
-    public ResponseEntity<List<Item>> buscarItemPorPreco(@RequestParam double precoMinimo,
-                                                    @RequestParam double precoMaximo) {
-        List<Item> itens = itemService.buscarPorPreco(precoMinimo, precoMaximo);
-        return itens.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(itens);
-    }
-
-    // Buscar itens por raridade
-    @GetMapping("/buscarPorRaridade")
-    public ResponseEntity<List<Item>> buscarItemPorRaridade(@RequestParam String raridade) {
-        List<Item> itens = itemService.buscarPorRaridade(raridade);
-        return itens.isEmpty() ? ResponseEntity.notFound().build() : ResponseEntity.ok(itens);
     }
 }
